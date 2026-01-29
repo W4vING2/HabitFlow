@@ -12,7 +12,7 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 export default function LoginForm() {
 	const [errorMessage, setErrorMessage] = useState('')
 	const router = useRouter()
-	const { setIsAuthenticated } = useGlobalStore()
+	const { setIsAuthenticated, setCurrentUser } = useGlobalStore()
 	const {
 		register,
 		handleSubmit,
@@ -27,59 +27,70 @@ export default function LoginForm() {
 				setErrorMessage('Неверный email или пароль')
 				return
 			}
-			console.log('Пользователь вошел:', user)
+			setCurrentUser(user)
+			setIsAuthenticated(true)
+			router.push('/')
 		} catch (err) {
 			setErrorMessage('Ошибка при входе')
 			console.error(err)
 		}
-		setIsAuthenticated(true)
-		router.push('/')
 	}
 
 	return (
-		<form className='flex flex-col gap-6' onSubmit={handleSubmit(onSubmit)}>
-			<div className='flex flex-col gap-1'>
-				<Input
-					name='email'
-					label='Email'
-					type='email'
-					placeholder='you@example.com'
-					register={register('email', {
-						required: 'Email обязателен',
-						pattern: {
-							value: /^\S+@\S+$/i,
-							message: 'Неверный формат email',
-						},
-					})}
-				/>
-				{errors.email && (
-					<span className='text-red-500 text-sm ml-1'>
-						{errors.email.message}
-					</span>
+		<form
+			className='w-full max-w-md mx-auto bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-slate-200/60 shadow-lg'
+			onSubmit={handleSubmit(onSubmit)}
+		>
+			<h2 className='text-2xl font-bold bg-linear-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-6 text-center'>
+				Вход
+			</h2>
+
+			<div className='space-y-5'>
+				<div className='flex flex-col gap-2'>
+					<Input
+						name='email'
+						label='Email'
+						type='email'
+						placeholder='you@example.com'
+						register={register('email', {
+							required: 'Email обязателен',
+							pattern: {
+								value: /^\S+@\S+$/i,
+								message: 'Неверный формат email',
+							},
+						})}
+					/>
+					{errors.email && (
+						<span className='text-red-500 text-xs ml-1'>
+							{errors.email.message}
+						</span>
+					)}
+				</div>
+
+				<div className='flex flex-col gap-2'>
+					<Input
+						name='password'
+						label='Пароль'
+						type='password'
+						placeholder='Введите пароль'
+						register={register('password', { required: 'Пароль обязателен' })}
+					/>
+					{errors.password && (
+						<span className='text-red-500 text-xs ml-1'>
+							{errors.password.message}
+						</span>
+					)}
+				</div>
+
+				{errorMessage && (
+					<div className='bg-red-50 border border-red-200 rounded-lg p-3'>
+						<p className='text-red-600 text-sm text-center'>{errorMessage}</p>
+					</div>
 				)}
-			</div>
 
-			<div className='flex flex-col gap-1'>
-				<Input
-					name='password'
-					label='Пароль'
-					type='password'
-					placeholder='Введите пароль'
-					register={register('password', { required: 'Пароль обязателен' })}
-				/>
-				{errors.password && (
-					<span className='text-red-500 text-sm ml-1'>
-						{errors.password.message}
-					</span>
-				)}
-			</div>
-
-			{errorMessage && (
-				<div className='text-red-500 text-sm'>{errorMessage}</div>
-			)}
-
-			<div className='mt-4'>
-				<Button title='Войти' />
+				<div className='pt-2'>
+					<Button title='Войти' variant='primary' />
+				</div>
 			</div>
 		</form>
 	)

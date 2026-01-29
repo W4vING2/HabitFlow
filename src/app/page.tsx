@@ -1,5 +1,6 @@
 'use client'
 
+import Dashboard from '@/pages/Dashboard'
 import { useGlobalStore } from '@/shared/store/globalStore'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
@@ -15,5 +16,5 @@ export default function Home() {
 			router.push('/')
 		}
 	}, [isAuthenticated, router])
-	return <h1>Hello World</h1>
+	return <Dashboard />
 }
