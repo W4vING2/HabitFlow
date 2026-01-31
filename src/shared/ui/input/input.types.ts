@@ -6,4 +6,6 @@ export interface IInputProps {
 	type?: string
 	placeholder?: string
 	register?: UseFormRegisterReturn
+	error?: string
+	showPasswordToggle?: boolean
 }

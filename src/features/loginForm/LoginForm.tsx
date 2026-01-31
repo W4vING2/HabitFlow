@@ -4,23 +4,29 @@ import { User } from '@/entities/user/model'
 import { Service } from '@/shared/api/apiService'
 import { useGlobalStore } from '@/shared/store/globalStore'
 import Button from '@/shared/ui/button'
+import CustomLink from '@/shared/ui/customlink/CustomLink'
 import Input from '@/shared/ui/input'
+import Text from '@/shared/ui/text/Text'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 
 export default function LoginForm() {
 	const [errorMessage, setErrorMessage] = useState('')
+	const [loading, setLoading] = useState(false)
 	const router = useRouter()
 	const { setIsAuthenticated, setCurrentUser } = useGlobalStore()
 	const {
 		register,
 		handleSubmit,
 		formState: { errors },
-	} = useForm<Omit<User, 'username'>>()
+	} = useForm<Omit<User, 'username'>>({
+		mode: 'onBlur',
+	})
 
 	const onSubmit: SubmitHandler<Omit<User, 'username'>> = async data => {
 		setErrorMessage('')
+		setLoading(true)
 		try {
 			const user = await Service.login(data.email, data.password)
 			if (!user) {
@@ -31,14 +37,21 @@ export default function LoginForm() {
 			setIsAuthenticated(true)
 			router.push('/')
 		} catch (err) {
-			setErrorMessage('Ошибка при входе')
+			const message =
+				err instanceof Error &&
+				err.message.toLowerCase().includes('failed to fetch')
+					? 'Не удалось подключиться к серверу. Убедитесь, что запущен backend: npm run json-server'
+					: 'Ошибка при входе'
+			setErrorMessage(message)
 			console.error(err)
+		} finally {
+			setLoading(false)
 		}
 	}
 
 	return (
 		<form
-			className='w-full max-w-md mx-auto bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-slate-200/60 shadow-lg'
+			className='h-full w-full mx-auto bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-slate-200/60 shadow-lg'
 			onSubmit={handleSubmit(onSubmit)}
 		>
 			<h2 className='text-2xl font-bold bg-linear-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-6 text-center'>
@@ -46,41 +59,30 @@ export default function LoginForm() {
 			</h2>
 
 			<div className='space-y-5'>
-				<div className='flex flex-col gap-2'>
-					<Input
-						name='email'
-						label='Email'
-						type='email'
-						placeholder='you@example.com'
-						register={register('email', {
-							required: 'Email обязателен',
-							pattern: {
-								value: /^\S+@\S+$/i,
-								message: 'Неверный формат email',
-							},
-						})}
-					/>
-					{errors.email && (
-						<span className='text-red-500 text-xs ml-1'>
-							{errors.email.message}
-						</span>
-					)}
-				</div>
+				<Input
+					name='email'
+					label='Email'
+					type='email'
+					placeholder='you@example.com'
+					register={register('email', {
+						required: 'Email обязателен',
+						pattern: {
+							value: /^\S+@\S+$/i,
+							message: 'Неверный формат email',
+						},
+					})}
+					error={errors.email?.message}
+				/>
 
-				<div className='flex flex-col gap-2'>
-					<Input
-						name='password'
-						label='Пароль'
-						type='password'
-						placeholder='Введите пароль'
-						register={register('password', { required: 'Пароль обязателен' })}
-					/>
-					{errors.password && (
-						<span className='text-red-500 text-xs ml-1'>
-							{errors.password.message}
-						</span>
-					)}
-				</div>
+				<Input
+					name='password'
+					label='Пароль'
+					type='password'
+					placeholder='Введите пароль'
+					register={register('password', { required: 'Пароль обязателен' })}
+					error={errors.password?.message}
+					showPasswordToggle
+				/>
 
 				{errorMessage && (
 					<div className='bg-red-50 border border-red-200 rounded-lg p-3'>
@@ -88,10 +90,17 @@ export default function LoginForm() {
 					</div>
 				)}
 
-				<div className='pt-2'>
-					<Button title='Войти' variant='primary' />
+				<div className='pt-2 mb-6'>
+					<Button
+						title={loading ? 'Вход...' : 'Войти'}
+						variant='primary'
+						disabled={loading}
+					/>
 				</div>
 			</div>
+			<Text align='center'>
+				Нет аккаунта? <CustomLink href='/register' title='Зарегистрироваться' />
+			</Text>
 		</form>
 	)
 }

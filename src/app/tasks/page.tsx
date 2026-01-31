@@ -1,20 +1,19 @@
 'use client'
 
-import Stats from '@/features/stats/Stats'
+import Tasks from '@/widgets/tasks'
 import { useGlobalStore } from '@/shared/store/globalStore'
+import Header from '@/widgets/header'
+import SideBar from '@/widgets/sideBar'
 import { useState } from 'react'
-import Header from '../widgets/header'
-import SideBar from '../widgets/sideBar'
-import Tasks from '../widgets/tasks'
 
-export default function DashboardPage() {
+export default function TasksPage() {
 	const [sidebarOpen, setSidebarOpen] = useState(false)
 	const { theme } = useGlobalStore()
 	const isDark = theme === 'dark'
 
 	const rootClass = isDark
-		? 'relative min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-50 min-w-screen'
-		: 'relative min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 min-w-screen'
+		? 'relative min-h-screen bg-linear-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-50 min-w-screen'
+		: 'relative min-h-screen bg-linear-to-br from-slate-50 via-blue-50 to-indigo-50 min-w-screen'
 
 	return (
 		<div className={rootClass}>
@@ -30,10 +29,10 @@ export default function DashboardPage() {
 
 				<main className='flex-1 p-4 md:p-8 pb-20 md:pb-8'>
 					<Header setSidebarOpen={setSidebarOpen} />
-					<Stats />
 					<Tasks />
 				</main>
 			</div>
 		</div>
 	)
 }
+

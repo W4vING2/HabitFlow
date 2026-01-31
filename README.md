@@ -1,36 +1,111 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## HabitFlow
 
-## Getting Started
+HabitFlow — pet‑проект трекера привычек и задач с дашбордом, статистикой, целями и простым mock‑backend на `json-server`. Подходит как демонстрация фронтенд‑скиллов и архитектуры небольшого приложения.
 
-First, run the development server:
+### Стек
+
+- **Next.js 16** (App Router)
+- **React 19**
+- **TypeScript**
+- **Zustand** — глобальное состояние (авторизация, тема)
+- **react-hook-form** — формы логина/регистрации
+- **Tailwind CSS 4** — стили и анимации
+- **json-server** — моковый REST API (`db.json`)
+
+---
+
+## Основные фичи
+
+- **Авторизация и регистрация**
+  - Форма входа по email/паролю с валидацией и обработкой ошибок (`failed to fetch`, неверные данные).
+  - Регистрация с подтверждением пароля и сохранением пользователя в `json-server`.
+  - Состояние авторизации и текущий пользователь сохраняются в `localStorage` (через zustand `persist`).
+
+- **Дашборд**
+  - Карточки:
+    - **Active Goals** — количество активных целей (progress \< 100%).
+    - **Tasks Today** — количество задач на сегодня.
+    - **Completed** — общее количество выполненных задач.
+    - **Streak** — длина текущей серии дней с выполненными задачами.
+    - Подпись `+XX%` под карточкой считается динамически относительно вчерашнего дня.
+  - Блок **Last 7 days** — мини‑барчарт по выполненным задачам за последние 7 дней.
+  - Виджет **Tasks**:
+    - CRUD по задачам: добавление, завершение, удаление.
+    - Фильтры All / Active / Completed.
+    - Привязка задач к пользователю через `userId = email`.
+
+- **Goals**
+  - Отдельная вкладка `Goals` с CRUD по целям:
+    - Добавление цели (название + прогресс‑слайдер 0–100%).
+    - Редактирование и удаление целей.
+    - Цели хранятся в `db.json` (`/goals`) и фильтруются по пользователю.
+  - На дашборде показываются только реально существующие цели текущего пользователя.
+
+- **Settings**
+  - Карточка аккаунта (имя, email, аватар с инициалом).
+  - Кнопка **Logout** с очисткой состояния и редиректом на `/login`.
+  - Переключатель темы (**light / dark**), состояние темы хранится в zustand и влияет на оформление всех основных страниц.
+
+---
+
+## Запуск проекта
+
+### 1. Установка зависимостей
+
+```bash
+npm install
+# или
+bun install
+```
+
+### 2. Запуск mock‑backend (`json-server`)
+
+В корне проекта есть `db.json` с пользователями, задачами и целями.
+
+```bash
+npm run json-server
+```
+
+Сервер поднимется на `http://localhost:4000`, эндпоинты:
+
+- `GET /users`
+- `GET /tasks`
+- `GET /goals`
+
+### 3. Запуск фронтенда
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+# или
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Приложение будет доступно на `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Если при логине/регистрации видите ошибку вида **Failed to fetch**, убедитесь, что запущен `npm run json-server`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## Структура проекта (кратко)
 
-To learn more about Next.js, take a look at the following resources:
+- `src/app` — страницы Next.js (`/`, `/login`, `/register`, `/goals`, `/tasks`, `/settings`).
+- `src/pages/Dashboard.tsx` — основной дашборд, собирает `Header`, `SideBar`, `Stats`, `Tasks`.
+- `src/features/*` — фичи:
+  - `loginForm`, `registerForm`, `stats`, `goals`, `settings`.
+- `src/entities/*` — доменные сущности (`user`, `task`, `dashboard`).
+- `src/shared` — общий код:
+  - `api/apiService.ts` — работа с `json-server`.
+  - `store/globalStore.ts` — zustand‑хранилище (авторизация + тема).
+  - `ui/*` — переиспользуемые UI‑компоненты (кнопки, инпуты, заголовки, текст).
+  - `config/*` — конфиги дашборда и сайдбара.
+- `src/widgets/*` — композиционные блоки (header, sidebar, tasks).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Идеи для развития
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Поддержка дедлайнов и напоминаний по задачам.
+- Календарный вид для задач/привычек.
+- Более продвинутый профайл (аватар, описание, цели по категориям).
+- Реальный backend (NestJS / FastAPI) вместо `json-server`.
+- Интернационализация (RU/EN) и сохранение выбранного языка.

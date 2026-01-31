@@ -1,11 +1,15 @@
+import { cn } from '@/shared/lib/utils'
+
 export default function Text({
 	children,
 	align = 'left',
 	size = 'sm',
+	className,
 }: {
 	children?: React.ReactNode
 	align?: 'left' | 'center' | 'right'
 	size?: 'xs' | 'sm' | 'base'
+	className?: string
 }) {
 	const alignments = {
 		left: 'text-left',
@@ -20,7 +24,7 @@ export default function Text({
 	}
 
 	return (
-		<p className={`${sizes[size]} ${alignments[align]} text-slate-500 mt-2`}>
+		<p className={cn(`${sizes[size]} ${alignments[align]} text-slate-500`, className)}>
 			{children}
 		</p>
 	)

@@ -12,8 +12,6 @@ export default function Home() {
 	useEffect(() => {
 		if (!isAuthenticated) {
 			router.push('/login')
-		} else {
-			router.push('/')
 		}
 	}, [isAuthenticated, router])
 	return <Dashboard />
