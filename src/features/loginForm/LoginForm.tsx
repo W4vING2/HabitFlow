@@ -1,6 +1,5 @@
 'use client'
 
-import { User } from '@/entities/user/model'
 import { Service } from '@/shared/api/apiService'
 import { useGlobalStore } from '@/shared/store/globalStore'
 import Button from '@/shared/ui/button'
@@ -11,6 +10,11 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 
+type LoginFormValues = {
+	email: string
+	password: string
+}
+
 export default function LoginForm() {
 	const [errorMessage, setErrorMessage] = useState('')
 	const [loading, setLoading] = useState(false)
@@ -20,11 +24,11 @@ export default function LoginForm() {
 		register,
 		handleSubmit,
 		formState: { errors },
-	} = useForm<Omit<User, 'username'>>({
+	} = useForm<LoginFormValues>({
 		mode: 'onBlur',
 	})
 
-	const onSubmit: SubmitHandler<Omit<User, 'username'>> = async data => {
+	const onSubmit: SubmitHandler<LoginFormValues> = async data => {
 		setErrorMessage('')
 		setLoading(true)
 		try {
@@ -40,7 +44,7 @@ export default function LoginForm() {
 			const message =
 				err instanceof Error &&
 				err.message.toLowerCase().includes('failed to fetch')
-					? 'Не удалось подключиться к серверу. Убедитесь, что запущен backend: npm run json-server'
+					? 'Не удалось подключиться к серверу. Проверьте Supabase URL и ключ'
 					: 'Ошибка при входе'
 			setErrorMessage(message)
 			console.error(err)

@@ -23,14 +23,14 @@ export default function Goals() {
 
 	useEffect(() => {
 		const load = async () => {
-			if (!currentUser?.email) {
+			if (!currentUser?.id) {
 				setGoals([])
 				return
 			}
 			try {
 				setLoading(true)
 				setError(null)
-				const data = await Service.getGoals({ userId: currentUser.email })
+				const data = await Service.getGoals({ userId: currentUser.id })
 				setGoals(data)
 			} catch (e) {
 				console.error(e)
@@ -49,7 +49,7 @@ export default function Goals() {
 	}
 
 	const handleCreate = async () => {
-		if (!currentUser?.email) {
+		if (!currentUser?.id) {
 			setError('Войдите, чтобы управлять целями')
 			return
 		}
@@ -60,7 +60,7 @@ export default function Goals() {
 			const payload: Omit<GoalEntity, 'id'> = {
 				title: form.title.trim(),
 				progress: form.progress,
-				userId: currentUser.email,
+				userId: currentUser.id,
 			}
 			const created = await Service.createGoal(payload)
 			setGoals(prev => [...prev, created])
@@ -227,4 +227,3 @@ export default function Goals() {
 		</section>
 	)
 }
-

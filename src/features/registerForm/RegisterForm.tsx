@@ -1,6 +1,5 @@
 'use client'
 
-import { User } from '@/entities/user/model'
 import { Service } from '@/shared/api/apiService'
 import { useGlobalStore } from '@/shared/store/globalStore'
 import Button from '@/shared/ui/button'
@@ -11,7 +10,12 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 
-type RegisterFormValues = User & { confirmPassword: string }
+type RegisterFormValues = {
+	username: string
+	email: string
+	password: string
+	confirmPassword: string
+}
 
 export default function RegisterForm() {
 	const [errorMessage, setErrorMessage] = useState('')
@@ -39,8 +43,14 @@ export default function RegisterForm() {
 		setLoading(true)
 		try {
 			const { confirmPassword, ...payload } = data
-			const createdUser = await Service.createUser(payload)
-			setCurrentUser(createdUser)
+			const { user, session } = await Service.createUser(payload)
+			if (!session) {
+				setErrorMessage(
+					'Проверьте почту и подтвердите email, затем войдите в аккаунт.',
+				)
+				return
+			}
+			setCurrentUser(user)
 			setIsAuthenticated(true)
 			router.push('/')
 		} catch (error) {
@@ -48,7 +58,7 @@ export default function RegisterForm() {
 			const message =
 				error instanceof Error &&
 				error.message.toLowerCase().includes('failed to fetch')
-					? 'Не удалось подключиться к серверу. Убедитесь, что запущен backend: npm run json-server'
+					? 'Не удалось подключиться к серверу. Проверьте Supabase URL и ключ'
 					: 'Ошибка при регистрации'
 			setErrorMessage(message)
 		} finally {

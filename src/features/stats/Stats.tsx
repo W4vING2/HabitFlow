@@ -13,13 +13,13 @@ export default function Stats() {
 
 	useEffect(() => {
 		const load = async () => {
-			if (!currentUser?.email) return
+			if (!currentUser?.id) return
 
 			try {
 				setLoading(true)
 				const [tasksResponse, goalsResponse] = await Promise.all([
-					Service.getTasks({ userId: currentUser.email }),
-					Service.getGoals({ userId: currentUser.email }),
+					Service.getTasks({ userId: currentUser.id }),
+					Service.getGoals({ userId: currentUser.id }),
 				])
 				setTasks(tasksResponse)
 				setGoals(goalsResponse)

@@ -36,7 +36,7 @@ export default function Tasks() {
 
 	useEffect(() => {
 		const load = async () => {
-			if (!currentUser?.email) {
+			if (!currentUser?.id) {
 				setTasks([])
 				return
 			}
@@ -48,7 +48,7 @@ export default function Tasks() {
 				const today = new Date().toISOString().slice(0, 10)
 
 				const data = await Service.getTasks({
-					userId: currentUser.email,
+					userId: currentUser.id,
 					date: today,
 				})
 
@@ -68,7 +68,7 @@ export default function Tasks() {
 	useEffect(() => {
 		const loadGoals = async () => {
 			if (!showGoalsSummary) return
-			if (!currentUser?.email) {
+			if (!currentUser?.id) {
 				setGoals([])
 				return
 			}
@@ -76,7 +76,7 @@ export default function Tasks() {
 			try {
 				setGoalsLoading(true)
 				setGoalsError(null)
-				const data = await Service.getGoals({ userId: currentUser.email })
+				const data = await Service.getGoals({ userId: currentUser.id })
 				setGoals(data)
 			} catch (e) {
 				console.error(e)
@@ -91,7 +91,7 @@ export default function Tasks() {
 
 	const handleCreateTask = async () => {
 		if (!newTask.title.trim()) return
-		if (!currentUser?.email) {
+		if (!currentUser?.id) {
 			setError('Войдите, чтобы добавлять задачи')
 			return
 		}
@@ -105,7 +105,7 @@ export default function Tasks() {
 				description: '',
 				date: today,
 				completed: false,
-				userId: currentUser.email,
+				userId: currentUser.id,
 				priority: newTask.priority,
 			}
 

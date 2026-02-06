@@ -10,6 +10,8 @@ interface GlobalStore {
 	currentUser: User | null
 	setCurrentUser: (user: User | null) => void
 	resetAuth: () => void
+	authReady: boolean
+	setAuthReady: (value: boolean) => void
 	theme: Theme
 	toggleTheme: () => void
 }
@@ -21,7 +23,10 @@ export const useGlobalStore = create<GlobalStore>()(
 			setIsAuthenticated: (value: boolean) => set({ isAuthenticated: value }),
 			currentUser: null,
 			setCurrentUser: (user: User | null) => set({ currentUser: user }),
-			resetAuth: () => set({ isAuthenticated: false, currentUser: null }),
+			resetAuth: () =>
+				set({ isAuthenticated: false, currentUser: null, authReady: true }),
+			authReady: false,
+			setAuthReady: (value: boolean) => set({ authReady: value }),
 			theme: 'light',
 			toggleTheme: () =>
 				set(state => ({

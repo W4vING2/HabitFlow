@@ -1,6 +1,7 @@
 'use client'
 
 import { useGlobalStore } from '@/shared/store/globalStore'
+import { supabase } from '@/shared/api/supabaseClient'
 import Button from '@/shared/ui/button'
 import Heading from '@/shared/ui/heading'
 import Text from '@/shared/ui/text'
@@ -10,7 +11,8 @@ export default function Settings() {
 	const { currentUser, resetAuth, theme, toggleTheme } = useGlobalStore()
 	const router = useRouter()
 
-	const handleLogout = () => {
+	const handleLogout = async () => {
+		await supabase.auth.signOut()
 		resetAuth()
 		router.push('/login')
 	}
@@ -74,4 +76,3 @@ export default function Settings() {
 		</section>
 	)
 }
-

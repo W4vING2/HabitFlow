@@ -6,13 +6,13 @@ import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
 export default function Home() {
-	const { isAuthenticated } = useGlobalStore()
+	const { isAuthenticated, authReady } = useGlobalStore()
 	const router = useRouter()
 
 	useEffect(() => {
-		if (!isAuthenticated) {
+		if (authReady && !isAuthenticated) {
 			router.push('/login')
 		}
-	}, [isAuthenticated, router])
+	}, [authReady, isAuthenticated, router])
 	return <Dashboard />
 }
