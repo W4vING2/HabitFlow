@@ -2,16 +2,13 @@
 
 import { supabase } from '@/shared/api/supabaseClient'
 import { useGlobalStore } from '@/shared/store/globalStore'
+import type { User as SupabaseUser } from '@supabase/supabase-js'
 import { useEffect } from 'react'
 
-const buildUser = (user: {
-	id: string
-	email: string | null
-	user_metadata?: Record<string, unknown> | null
-}) => {
+const buildUser = (user: SupabaseUser) => {
 	const usernameFromMeta =
 		typeof user.user_metadata?.username === 'string'
-			? user.user_metadata?.username
+			? user.user_metadata.username
 			: null
 	const email = user.email ?? ''
 	return {
